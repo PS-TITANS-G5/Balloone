@@ -1,0 +1,24 @@
+# Arquivos locais do Renan e do Claude (não vão para o GitHub)
+referencias/
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# Arquivos gerados pela compilação
+.pio/
+build/
+*.bin
+*.elf
+node_modules/
+__pycache__/
+.venv/
+
+# Arquivos do sistema e de editores
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+
+# Senhas e configurações locais
+.env
+secrets.h
