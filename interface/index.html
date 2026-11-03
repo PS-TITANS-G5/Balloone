@@ -1,0 +1,32 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Balloone G5 — Bancada</title><style>body{font:16px system-ui;background:#111827;color:#f8fafc;max-width:760px;margin:auto;padding:20px}input,button{font:inherit;padding:10px;border-radius:7px;margin:4px}button{background:#2563eb;color:white;border:0;touch-action:none;cursor:pointer}.pad{display:grid;grid-template-columns:repeat(3,90px);gap:8px}.pad button{height:65px}img{width:100%;max-width:500px;min-height:160px;background:#000}output{display:block;padding:10px;background:#293548;margin:12px 0}small{color:#cbd5e1}</style></head><body>
+<h1>Balloone G5 — protótipo de bancada</h1><p>Controle Wi-Fi puro, motores simulados. NÃO usar em arena ou com motores energizados.</p>
+<label>IP <input id="host" value="192.168.4.1"></label><label>Token <input id="token" type="password" autocomplete="off" placeholder="Token configurado no firmware"></label><button id="connect">Conectar</button><button id="disconnect">Desconectar</button>
+<output id="status" aria-live="polite">Desconectado</output><img id="video" alt="Vídeo da ESP32-CAM"><output id="videoStatus">Vídeo: inativo (monitoramento de quadros indisponível no elemento img)</output>
+<div class="pad"><span></span><button data-cmd="FWD">↑</button><span></span><button data-cmd="LEFT">←</button><button data-cmd="STOP">PARAR</button><button data-cmd="RIGHT">→</button><span></span><button data-cmd="BACK">↓</button><span></span></div>
+<output id="metrics">RTT: sem amostras</output><small>RTT mede confirmação de aplicação, não tempo até movimento. Vídeo sem medição de FPS. Teclas: setas/WASD. Perda de foco ou soltar o comando: STOP.</small>
+<script>
+'use strict';
+let ws=null,seq=0,held='STOP',pressed=new Set(),pointerCmd=null,sent=new Map(),samples=[],timer=null,session=0,ready=false;
+const $=id=>document.getElementById(id), status=t=>$('status').textContent=t;
+const keyMap={ArrowUp:'FWD',w:'FWD',ArrowDown:'BACK',s:'BACK',ArrowLeft:'LEFT',a:'LEFT',ArrowRight:'RIGHT',d:'RIGHT'};
+function cleanState(){held='STOP';pressed.clear();pointerCmd=null;sent.clear();samples=[];seq=0;ready=false;clearInterval(timer);timer=null;$('metrics').textContent='RTT: sem amostras';}
+function send(cmd){if(!ws||ws.readyState!==WebSocket.OPEN)return;const token=$('token').value;if(!token)return;const n=++seq;sent.set(n,performance.now());if(sent.size>60)sent.delete(sent.keys().next().value);ws.send(`${token},${n},${cmd}`);}
+function stop(){pressed.clear();pointerCmd=null;held='STOP';send('STOP');}
+function currentCmd(){if(pointerCmd)return pointerCmd;const values=[...pressed].map(k=>keyMap[k]);return values.length===1?values[0]:'STOP';}
+function updateHeld(){const next=currentCmd();if(next!==held){held=next;send(held);}}
+function closeSession(){stop();const old=ws;ws=null;session++;cleanState();if(old){old.onclose=null;old.onmessage=null;old.close();}$('video').removeAttribute('src');$('videoStatus').textContent='Vídeo: inativo';status('Desconectado');}
+$('connect').onclick=()=>{closeSession();const h=$('host').value.trim(),token=$('token').value;
+if(!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(h)||!token||token.includes(',')){status('Informe IP IPv4 e token sem vírgulas');return;}
+const id=++session;status('Conectando...');const sock=new WebSocket(`ws://${h}:81`);ws=sock;
+sock.onopen=()=>{if(id!==session)return;cleanState();ready=true;status('Conectado; STOP inicial enviado');send('STOP');timer=setInterval(()=>{if(id===session&&ready)send(held)},100);$('video').src=`http://${h}/stream`; $('videoStatus').textContent='Vídeo: solicitado; congelamento/FPS não verificáveis neste protótipo';};
+sock.onclose=()=>{if(id!==session)return;ws=null;cleanState();$('video').removeAttribute('src');status('Conexão encerrada — controle parado no cliente');};
+sock.onerror=()=>{if(id===session)status('Falha de comunicação');};
+sock.onmessage=e=>{if(id!==session)return;const m=/^ACK:(\d+):(\d+):(STOP|FWD|BACK|LEFT|RIGHT)$/.exec(e.data);if(!m){status(e.data);if(/^ERR:(BUSY|AUTH_OR_FORMAT|STALE|NEED_STOP)/.test(e.data)){held='STOP';pressed.clear();pointerCmd=null;}return;}
+const n=Number(m[1]);if(sent.has(n)){samples.push(performance.now()-sent.get(n));sent.delete(n);if(samples.length>200)samples.shift();const sorted=[...samples].sort((a,b)=>a-b);const p=i=>sorted[Math.min(sorted.length-1,Math.max(0,Math.ceil(i*sorted.length)-1))].toFixed(1);$('metrics').textContent=`RTT mediana: ${p(.5)} ms | p95: ${p(.95)} ms | n=${sorted.length} | comando: ${m[3]}`;}
+status(`Controle conectado | comando confirmado: ${m[3]}`);};};
+$('disconnect').onclick=closeSession;
+for(const b of document.querySelectorAll('[data-cmd]')){b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);pointerCmd=b.dataset.cmd;updateHeld();};b.onpointerup=e=>{pointerCmd=null;updateHeld();};b.onpointercancel=()=>{pointerCmd=null;updateHeld();};b.onlostpointercapture=()=>{pointerCmd=null;updateHeld();};}
+window.addEventListener('keydown',e=>{if(e.target.matches('input'))return;const k=e.key.length===1?e.key.toLowerCase():e.key;if(keyMap[k]){e.preventDefault();pressed.add(k);updateHeld();}});
+window.addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(keyMap[k]){e.preventDefault();pressed.delete(k);updateHeld();}});
+window.addEventListener('blur',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});window.addEventListener('pagehide',stop);
+</script></body></html>
