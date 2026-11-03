@@ -14,7 +14,8 @@ O projeto, a equipe e as datas estão na [página da organização](https://gith
 | `interface/` | tela do piloto |
 | `eletronica/` | esquemáticos, placa e lista de componentes |
 | `mecanica/` | CAD exportado (STEP, STL), desenhos e imagens |
-| `docs/` | o que envolve o robô todo: arquitetura, comunicação e testes |
+| `redes/` | Configurações e funcionamento da área de redes |
+| `docs/` | o que envolve o robô todo: arquitetura, requisitos e testes |
 
 O código de comunicação fica em `firmware/` e `interface/`. O estudo sobre comunicação fica em `docs/`.
 
