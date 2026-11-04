@@ -14,7 +14,7 @@
 2. No sketch, definir `BALLOONE_AP_PASSWORD` e `BALLOONE_CONTROL_TOKEN` com valores próprios fortes (sem vírgulas no token), alterando as macros ou passando defines de compilação. Não compartilhar credenciais no repositório.
 3. Compilar e gravar, alimentar de forma estável, abrir Serial 115200. Se mostrar `CONFIG_INSEGURA`, configurar credenciais e gravar novamente.
 4. Conectar computador ao AP `BALLOONE_G5`, abrir `interface/index.html` (ou servir com `python -m http.server 8000` na pasta `interface`). Inserir token e conectar ao IP indicado no serial, normalmente `192.168.4.1`.
-5. Verificar STOP inicial, comandos simulados no serial, RTT, perda de conexão e reconexão. Registrar resultados reais em `tests/registro_testes.csv`.
+5. Verificar STOP inicial, comandos simulados no serial, RTT, perda de conexão e reconexão. Registrar resultados reais em `docs/rede/registro-testes.csv`.
 
 ## Limites e bloqueadores para hardware
 - O `applyMotor()` é simulado. Integrar somente após aprovação do driver, alimentação, pinos disponíveis, polaridades e teste de parada independente. Não conectar motores diretamente aos GPIOs.
@@ -32,7 +32,7 @@
 5. Integrar segurança de motores com firmware e eletrônica; testar STOP físico com rodas suspensas.
 6. Comparar Wi-Fi com câmera ligada e desligada, e repetir com outros dispositivos na rede. A topologia de ponto de acesso da placa versus roteador central permanece em avaliação; este firmware implementa apenas o ponto de acesso da própria ESP32-CAM.
 
-**Referências de escopo:** relatório PC1 Redes e Comunicação do Grupo 5 e edital Titans 2026/2. PC2 previsto para 23/11/2026.
+**Referências de escopo:** relatório PC1 Redes e Comunicação do Grupo 5 e edital Titans 2026/2. PC2 previsto para 21/11/2026.
 
 ## Decisões atualizadas — 03/11/2026
 - **Protocolo de comandos escolhido:** WebSocket sobre Wi-Fi.
