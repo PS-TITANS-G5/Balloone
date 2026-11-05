@@ -16,7 +16,7 @@ O projeto, a equipe e as datas estão na [página da organização](https://gith
 | `mecanica/` | CAD exportado (STEP, STL), desenhos e imagens |
 | `docs/` | o que envolve o robô todo: requisitos, arquitetura, fluxos, comunicação e testes |
 
-O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`.
+O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`. Na raiz, o `platformio.ini` configura a compilação do firmware.
 
 ## Palavras do GitHub
 

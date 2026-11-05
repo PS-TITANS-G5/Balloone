@@ -1,43 +1,62 @@
-# Balloone G5 — PC2, revisão de segurança (Wi-Fi puro)
+# Comunicação (rede)
 
-**Estado:** versão PC2 atualizada após orientação dos organizadores para utilizar Wi-Fi. Revisão estática; NÃO compilado em ESP32 nem testado em hardware. Motores simulados, sem GPIO de acionamento. Não usar com motores energizados. A alternativa BLE+Wi-Fi do PC1 foi descartada do escopo atual após recomendação dos organizadores pelo Wi-Fi.
+Como o notebook do piloto conversa com o robô. O código fica em `firmware/balloone/balloone.ino` (lado do robô) e em `interface/index.html` (lado do piloto).
 
-## Correções incluídas
-- Token de controle configurável e senha WPA2 do AP, ambos com placeholders que impedem inicialização normal até troca. **Token em texto claro no WebSocket dentro da rede local**: não equivale a autenticação criptográfica nem impede interceptação por alguém já conectado. Vídeo MJPEG sem autenticação; não expor a redes externas.
-- Uma sessão de controle por vez, adquirida somente com `STOP` autenticado. Rejeita sequência duplicada, antiga, fora do limite uint32 e comandos inválidos. Após timeout/desconexão, a sessão e o contador reiniciam.
-- Timeout de 350 ms verificado antes do processamento do WebSocket; STOP simulado em perda de comandos. **Não é watchdog independente nem parada física garantida**: para operar motores reais é obrigatória supervisão de segurança local independente do servidor de rede.
-- Interface reinicializa estados, sequências e medições ao conectar/desconectar, controla teclas pressionadas, trata perda de foco e mostra mediana e p95 do RTT de aplicação.
-- Vídeo tem indicação de solicitação/erro de conexão, mas o elemento HTML `img` MJPEG não permite medição confiável de FPS/congelamento. **Monitoramento de vídeo não implementado.**
+**Situação em 05/11:** testado na placa. A rede, os comandos e o vídeo funcionam. Os motores ainda são simulados: o firmware só escreve o comando no monitor serial.
 
-## Configuração e execução
-1. Usar a **Freenove ESP32-WROVER-DEV v1.6** (pinagem em `firmware/README.md`). Instalar Arduino ESP32 core 3.x e `WebSockets by Markus Sattler`.
-2. A senha da rede (`BALLOONE_AP_PASSWORD`) e o token (`BALLOONE_CONTROL_TOKEN`) já vêm definidos no sketch: `123456789` e `balloone`.
-3. Compilar e gravar, alimentar de forma estável, abrir Serial 115200. Se mostrar `CONFIG_INSEGURA`, configurar credenciais e gravar novamente.
-4. Conectar computador ao AP `BALLOONE_G5`, abrir `interface/index.html` (ou servir com `python -m http.server 8000` na pasta `interface`). Inserir token e conectar ao IP indicado no serial, normalmente `192.168.4.1`.
-5. Verificar STOP inicial, comandos simulados no serial, RTT, perda de conexão e reconexão. Registrar resultados reais em `docs/rede/registro-testes.csv`.
+## Como funciona
 
-## Limites e bloqueadores para hardware
-- O `applyMotor()` é simulado. Integrar somente após aprovação do driver, alimentação, pinos disponíveis, polaridades e teste de parada independente. Não conectar motores diretamente aos GPIOs.
-- LED de conexão obrigatório do edital ainda depende da pinagem; não implementado.
-- A API de câmera, biblioteca WebSocket e comportamento de watchdog devem ser confirmados por compilação e ensaio físico.
-- A medição de RTT não representa tempo até movimento. FPS, latência de vídeo e coexistência BLE/Wi-Fi precisam de instrumentação e ensaios separados.
-- A interface web local e WebSocket `ws://` devem ser usados apenas na rede AP isolada. Não há TLS nem autenticação do stream de vídeo.
-- Se o firmware travar entre verificações do loop, o timeout não garante parada; um watchdog que reinicie a placa também não garante desenergização do driver sem projeto elétrico adequado.
+O robô cria a própria rede Wi-Fi, e o notebook do piloto entra nela.
 
-## Testes de aceitação ainda necessários
-1. Compilar para a variante exata da placa e testar inicialização com câmera ativa.
-2. Tentar controlar sem token, com token incorreto e com segundo cliente.
-3. Validar sequência antiga, reconexão, timeout, perda de foco e perda de energia.
-4. Medir RTT p50/p95 e FPS real com vídeo ativo; repetir em cenário de interferência.
-5. Integrar segurança de motores com firmware e eletrônica; testar STOP físico com rodas suspensas.
-6. Comparar Wi-Fi com câmera ligada e desligada, e repetir com outros dispositivos na rede. A topologia de ponto de acesso da placa versus roteador central permanece em avaliação; este firmware implementa apenas o ponto de acesso da própria ESP32-CAM.
+| Item | Valor |
+| --- | --- |
+| Rede | `BALLOONE_G5`, senha `123456789`, canal 6 |
+| Endereço do robô | `192.168.4.1` |
+| Aparelhos conectados | um por vez |
 
-**Referências de escopo:** relatório PC1 Redes e Comunicação do Grupo 5 e edital Titans 2026/2. PC2 previsto para 21/11/2026.
+Por essa rede passam dois caminhos:
 
-## Decisões atualizadas — 03/11/2026
-- **Protocolo de comandos escolhido:** WebSocket sobre Wi-Fi.
-- **Transmissão de vídeo:** MJPEG sobre HTTP/Wi-Fi.
-- **BLE:** fora do escopo atual, conforme orientação recebida da organização.
-- **Topologia implementada:** a ESP32-CAM cria o AP `BALLOONE_G5`; conexão a roteador central ainda NÃO foi implementada.
-- **Próxima validação:** conexão, comandos simulados, RTT com/sem vídeo, desconexão e estabilidade.
-- **Atenção:** não há evidência de compilação, gravação ou testes físicos nesta revisão.
+- **Comandos (WebSocket, porta 81):** a interface envia o comando atual a cada 100 ms, no formato `token,número,comando`, como `balloone,15,FWD`. Os comandos são `FWD`, `BACK`, `LEFT`, `RIGHT` e `STOP`. O robô responde `ACK` ou um erro (`ERR:...`).
+- **Vídeo (HTTP, porta 80):** a câmera envia uma sequência de imagens JPEG (MJPEG) em `http://192.168.4.1/stream`, em 320×240 e com no máximo cerca de 14 quadros por segundo.
+
+## Regras de segurança
+
+- A conexão sempre começa com `STOP`.
+- Só um aparelho controla o robô por vez.
+- Um comando com número repetido ou menor que o anterior é recusado.
+- Se nenhum comando chegar em 350 ms, o robô para e encerra a conexão.
+- Soltar a tecla ou trocar de janela envia `STOP`.
+
+## Por que assim
+
+- **Wi-Fi puro:** orientação da organização. O Bluetooth dividiria o rádio da placa com o Wi-Fi.
+- **WebSocket:** mantém uma conexão aberta nos dois sentidos e funciona direto no navegador.
+- **MJPEG:** cada quadro é uma imagem independente, então um quadro perdido não estraga os seguintes.
+
+O `estudo.pdf`, feito para o PC1, compara as alternativas em detalhe. Ele propunha Bluetooth para os comandos, opção descartada em 03/11. O registro das decisões fica no Notion.
+
+## Como testar
+
+1. Grave o firmware (veja `firmware/README.md`) e abra o monitor serial. Deve aparecer `IP=192.168.4.1`.
+2. Conecte um notebook à rede `BALLOONE_G5`.
+3. Abra `interface/index.html` no navegador desse notebook, digite o token `balloone` e clique em **Conectar**.
+4. Use os botões da tela ou as setas do teclado. Cada comando aparece no monitor serial, como `MOTOR_SIMULADO=FWD`.
+
+Anote os resultados em `registro-testes.csv`.
+
+**Testes que faltam:**
+
+- Medir o tempo de resposta (RTT, mostrado na interface) em pelo menos 100 comandos, com e sem vídeo.
+- Medir os quadros por segundo do vídeo. A interface ainda não mede.
+- Desligar o Wi-Fi do notebook e ver o robô parar (`FAILSAFE_TIMEOUT` no monitor serial).
+- Tentar conectar um segundo aparelho e usar um token errado.
+- Repetir os testes com outras redes Wi-Fi por perto.
+
+## O que falta
+
+- **Motores:** o firmware ainda não aciona a ponte H.
+- **LED de conexão:** o pino está definido (IO15), mas o LED ainda não foi programado.
+- **Reconexão:** depois de 350 ms sem comandos, a conexão cai, e o piloto precisa clicar em **Conectar** de novo.
+- **Canal:** fixo no 6. Com cinco robôs na mesma área, pode ser preciso trocar.
+- **Parada garantida:** se o firmware travar, nada desliga os motores. Isso precisa de uma solução na eletrônica.
+- **Rede da competição:** usar um roteador central no lugar da rede do robô ainda está em avaliação.
