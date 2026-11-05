@@ -1,5 +1,5 @@
 // Balloone G5 — bancada Wi-Fi; MOTOR FISICO DESABILITADO.
-// ESP32 Arduino core 3.x; WebSocketsServer (Links2004); AI Thinker ESP32-CAM.
+// ESP32 Arduino core 3.x; WebSocketsServer (Links2004); Freenove ESP32-WROVER-DEV v1.6.
 #include <WiFi.h>
 #include <WebSocketsServer.h>
 #include <esp_camera.h>
@@ -10,10 +10,10 @@
 #include <string.h>
 
 #ifndef BALLOONE_AP_PASSWORD
-#define BALLOONE_AP_PASSWORD "ALTERE_SENHA_FORTE_2026"
+#define BALLOONE_AP_PASSWORD "123456789"
 #endif
 #ifndef BALLOONE_CONTROL_TOKEN
-#define BALLOONE_CONTROL_TOKEN "ALTERE_TOKEN_LONGO_2026"
+#define BALLOONE_CONTROL_TOKEN "balloone"
 #endif
 static const char* SSID="BALLOONE_G5";
 static constexpr uint32_t TIMEOUT_MS=350; // Provisorio; nao validado.
@@ -24,23 +24,31 @@ uint8_t owner=NO_OWNER;
 uint32_t lastRx=0,lastSeq=0;
 bool hasSeq=false,armed=false;
 char desired[8]="STOP";
-// Camera AI Thinker
-#define PWDN_GPIO_NUM 32
+// Camera da Freenove ESP32-WROVER-DEV v1.6 (igual ao CAMERA_MODEL_WROVER_KIT dos exemplos)
+#define PWDN_GPIO_NUM -1
 #define RESET_GPIO_NUM -1
-#define XCLK_GPIO_NUM 0
+#define XCLK_GPIO_NUM 21
 #define SIOD_GPIO_NUM 26
 #define SIOC_GPIO_NUM 27
 #define Y9_GPIO_NUM 35
 #define Y8_GPIO_NUM 34
 #define Y7_GPIO_NUM 39
 #define Y6_GPIO_NUM 36
-#define Y5_GPIO_NUM 21
-#define Y4_GPIO_NUM 19
-#define Y3_GPIO_NUM 18
-#define Y2_GPIO_NUM 5
+#define Y5_GPIO_NUM 19
+#define Y4_GPIO_NUM 18
+#define Y3_GPIO_NUM 5
+#define Y2_GPIO_NUM 4
 #define VSYNC_GPIO_NUM 25
 #define HREF_GPIO_NUM 23
 #define PCLK_GPIO_NUM 22
+
+// Pinos do esquematico (eletronica/esquematico-eletronica.pdf).
+// Ainda nao usados: os motores e o LED de conexao continuam simulados.
+#define MOTOR_IN1_PIN 13   // ponte H, motor P1
+#define MOTOR_IN2_PIN 14   // ponte H, motor P1
+#define MOTOR_IN3_PIN 32   // ponte H, motor P2
+#define MOTOR_IN4_PIN 33   // ponte H, motor P2
+#define LED_CONEXAO_PIN 15 // LED vermelho, com resistor de 330 ohms
 
 // A implementacao fisica deve impor parada no driver por mecanismo independente
 // e supervisionar seu proprio timeout. Nenhum pino de motor e acionado aqui.

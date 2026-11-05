@@ -16,7 +16,7 @@ O projeto, a equipe e as datas estão na [página da organização](https://gith
 | `mecanica/` | CAD exportado (STEP, STL), desenhos e imagens |
 | `docs/` | o que envolve o robô todo: requisitos, arquitetura, fluxos, comunicação e testes |
 
-O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`.
+O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`. Na raiz, o `platformio.ini` configura a compilação do firmware.
 
 ## Palavras do GitHub
 
@@ -44,5 +44,5 @@ A `main` só aceita mudanças por pull request, com a aprovação de outra pesso
 - Para atualizar um documento, edite ou substitua o mesmo arquivo. Não crie cópias como `final_v2`: o GitHub já guarda o histórico.
 - Documento que muda fica em Markdown, que dá para editar no navegador. PDF fica para o que vem de outra ferramenta, como esquemático e CAD.
 - Escreva mensagens de commit curtas, começando pela área (o nome da pasta), como `firmware: liga os motores`.
-- Nunca suba senhas, como a do Wi-Fi.
+- Nunca suba senhas pessoais, como as de contas ou do Wi-Fi de casa.
 - Pelo navegador, o limite é de 25 MB por arquivo. No caso do CAD, suba o arquivo exportado e o link do projeto original.
