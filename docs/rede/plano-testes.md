@@ -1,7 +1,7 @@
 # Plano de testes — Balloone G5 / PC2
 
 ## Preparação
-1. Confirmar o modelo AI Thinker ESP32-CAM e disponibilidade de programador USB-serial e alimentação estável.
+1. Confirmar a placa Freenove ESP32-WROVER-DEV v1.6, o cabo USB e alimentação estável.
 2. Substituir senha e token de exemplo no firmware.
 3. Compilar e gravar com Arduino ESP32 core 3.x e biblioteca WebSockets by Markus Sattler.
 4. Abrir monitor serial a 115200 baud; conectar notebook ao AP BALLOONE_G5.

@@ -10,7 +10,7 @@
 - Vídeo tem indicação de solicitação/erro de conexão, mas o elemento HTML `img` MJPEG não permite medição confiável de FPS/congelamento. **Monitoramento de vídeo não implementado.**
 
 ## Configuração e execução
-1. Confirmar **AI Thinker ESP32-CAM** e a pinagem real. Instalar Arduino ESP32 core 3.x e `WebSockets by Markus Sattler`.
+1. Usar a **Freenove ESP32-WROVER-DEV v1.6** (pinagem em `firmware/README.md`). Instalar Arduino ESP32 core 3.x e `WebSockets by Markus Sattler`.
 2. No sketch, definir `BALLOONE_AP_PASSWORD` e `BALLOONE_CONTROL_TOKEN` com valores próprios fortes (sem vírgulas no token), alterando as macros ou passando defines de compilação. Não compartilhar credenciais no repositório.
 3. Compilar e gravar, alimentar de forma estável, abrir Serial 115200. Se mostrar `CONFIG_INSEGURA`, configurar credenciais e gravar novamente.
 4. Conectar computador ao AP `BALLOONE_G5`, abrir `interface/index.html` (ou servir com `python -m http.server 8000` na pasta `interface`). Inserir token e conectar ao IP indicado no serial, normalmente `192.168.4.1`.

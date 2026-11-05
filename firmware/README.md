@@ -6,11 +6,11 @@ Programa que roda no robô (ESP32-CAM), incluindo a parte da comunicação do la
 
 Freenove ESP32-WROVER-DEV v1.6, com câmera OV2640.
 
-O protótipo atual ainda usa a pinagem da AI Thinker e precisa ser corrigido.
+A câmera usa a pinagem padrão dessa placa, a mesma do modelo `CAMERA_MODEL_WROVER_KIT` nos exemplos do Arduino.
 
 ## Pinos
 
-Mapeamento planejado, ainda a conferir na placa:
+Conferidos no esquemático em 05/11. Falta testar na placa.
 
 | Pino | Ligação |
 | --- | --- |
