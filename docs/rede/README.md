@@ -11,7 +11,7 @@
 
 ## Configuração e execução
 1. Usar a **Freenove ESP32-WROVER-DEV v1.6** (pinagem em `firmware/README.md`). Instalar Arduino ESP32 core 3.x e `WebSockets by Markus Sattler`.
-2. No sketch, definir `BALLOONE_AP_PASSWORD` e `BALLOONE_CONTROL_TOKEN` com valores próprios fortes (sem vírgulas no token), alterando as macros ou passando defines de compilação. Não compartilhar credenciais no repositório.
+2. A senha da rede (`BALLOONE_AP_PASSWORD`) e o token (`BALLOONE_CONTROL_TOKEN`) já vêm definidos no sketch: `123456789` e `balloone`.
 3. Compilar e gravar, alimentar de forma estável, abrir Serial 115200. Se mostrar `CONFIG_INSEGURA`, configurar credenciais e gravar novamente.
 4. Conectar computador ao AP `BALLOONE_G5`, abrir `interface/index.html` (ou servir com `python -m http.server 8000` na pasta `interface`). Inserir token e conectar ao IP indicado no serial, normalmente `192.168.4.1`.
 5. Verificar STOP inicial, comandos simulados no serial, RTT, perda de conexão e reconexão. Registrar resultados reais em `docs/rede/registro-testes.csv`.

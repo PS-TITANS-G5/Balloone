@@ -2,7 +2,7 @@
 
 ## Preparação
 1. Confirmar a placa Freenove ESP32-WROVER-DEV v1.6, o cabo USB e alimentação estável.
-2. Substituir senha e token de exemplo no firmware.
+2. Usar a senha `123456789` e o token `balloone`, já definidos no firmware.
 3. Compilar e gravar com Arduino ESP32 core 3.x e biblioteca WebSockets by Markus Sattler.
 4. Abrir monitor serial a 115200 baud; conectar notebook ao AP BALLOONE_G5.
 5. Abrir interface/index.html e informar IP e token.

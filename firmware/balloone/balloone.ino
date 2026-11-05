@@ -10,10 +10,10 @@
 #include <string.h>
 
 #ifndef BALLOONE_AP_PASSWORD
-#define BALLOONE_AP_PASSWORD "ALTERE_SENHA_FORTE_2026"
+#define BALLOONE_AP_PASSWORD "123456789"
 #endif
 #ifndef BALLOONE_CONTROL_TOKEN
-#define BALLOONE_CONTROL_TOKEN "ALTERE_TOKEN_LONGO_2026"
+#define BALLOONE_CONTROL_TOKEN "balloone"
 #endif
 static const char* SSID="BALLOONE_G5";
 static constexpr uint32_t TIMEOUT_MS=350; // Provisorio; nao validado.
