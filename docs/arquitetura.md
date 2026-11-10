@@ -13,7 +13,7 @@ config:
 ---
 flowchart LR
   subgraph piloto["Piloto"]
-    NB["Notebook<br>(navegador)"]
+    NB["Notebook<br>(interface no navegador)"]
   end
 
   subgraph robo["Robô"]
