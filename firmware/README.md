@@ -8,7 +8,7 @@ Freenove ESP32-WROVER-DEV v1.6, com câmera OV2640. A câmera usa a pinagem padr
 
 ## Pinos
 
-Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 05/11. Ainda não são usados, porque os motores e o LED continuam simulados.
+Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 16/11. Ainda não são usados, porque os motores e o LED continuam simulados.
 
 | Pino | Ligação |
 | --- | --- |
@@ -16,7 +16,7 @@ Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 05/11. A
 | IO14 | IN2 da ponte H (motor P1) |
 | IO32 | IN3 da ponte H (motor P2) |
 | IO33 | IN4 da ponte H (motor P2) |
-| IO15 | LED de conexão, com resistor de 330 Ω |
+| IO2 | LED de conexão, com resistor de 330 Ω |
 
 ## Como compilar e gravar
 
