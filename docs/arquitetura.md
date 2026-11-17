@@ -52,6 +52,9 @@ Para mudar o diagrama, edite o texto do bloco `mermaid`. Dá para testar antes e
 
 ## Em aberto
 
-- **Proteção da bateria:** não há placa de proteção (BMS) para as duas células.
 - **Parada garantida:** se o firmware travar, nada desliga os motores.
 - **Rede da competição:** hoje a placa cria a própria rede. Um roteador central ainda está em avaliação.
+
+## Riscos
+
+- **Bateria sem proteção:** o grupo decidiu seguir sem BMS (17/11). Nada impede que as células descarreguem demais.
