@@ -33,7 +33,6 @@ flowchart LR
   CHV ==> REG
   CHV ==> PH
   REG ==>|"5 V"| ESP
-  REG ==>|"5 V"| PH
   REG ==>|"5 V"| LV
   PH ==> ME
   PH ==> MD

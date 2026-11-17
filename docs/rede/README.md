@@ -55,7 +55,7 @@ Anote os resultados em `registro-testes.csv`.
 ## O que falta
 
 - **Motores:** o firmware ainda não aciona a ponte H.
-- **LED de conexão:** o pino está definido (IO15), mas o LED ainda não foi programado.
+- **LED de conexão:** o pino está definido (IO2), mas o LED ainda não foi programado.
 - **Reconexão:** depois de 350 ms sem comandos, a conexão cai, e o piloto precisa clicar em **Conectar** de novo.
 - **Canal:** fixo no 6. Com cinco robôs na mesma área, pode ser preciso trocar.
 - **Parada garantida:** se o firmware travar, nada desliga os motores. Isso precisa de uma solução na eletrônica.
