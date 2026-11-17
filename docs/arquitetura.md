@@ -50,6 +50,10 @@ flowchart LR
 
 Para mudar o diagrama, edite o texto do bloco `mermaid`. Dá para testar antes em [mermaid.live](https://mermaid.live).
 
+## Manutenção
+
+A placa fica em soquete, a bateria em suporte e os fios em conectores removíveis. Assim, dá para trocar uma peça sem solda. As peças estão no [inventário](../eletronica/inventario-componentes.pdf).
+
 ## Em aberto
 
 - **Parada garantida:** se o firmware travar, nada desliga os motores.
