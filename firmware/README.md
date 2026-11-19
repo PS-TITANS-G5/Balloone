@@ -8,7 +8,7 @@ Freenove ESP32-WROVER-DEV v1.6, com câmera OV2640. A câmera usa a pinagem padr
 
 ## Pinos
 
-Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 16/11. Ainda não são usados, porque os motores e o LED continuam simulados.
+Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 17/11. Ainda não são usados, porque os motores e o LED continuam simulados.
 
 | Pino | Ligação |
 | --- | --- |
