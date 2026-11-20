@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T03:04:17.584120+00:00",
+  "title": "Design System: Balloone / Titans",
+  "extensions": {
+    "colorMeta": {
+      "titans-red": {
+        "displayName": "Vermelho",
+        "role": "primary"
+      },
+      "titans-gold": {
+        "displayName": "Dourado",
+        "role": "primary"
+      },
+      "titans-wine": {
+        "displayName": "Vinho",
+        "role": "primary"
+      },
+      "titans-brown": {
+        "displayName": "Marrom",
+        "role": "complementary"
+      },
+      "titans-orange": {
+        "displayName": "Laranja",
+        "role": "complementary"
+      },
+      "titans-salmon": {
+        "displayName": "Salmão",
+        "role": "complementary"
+      },
+      "white": {
+        "displayName": "Branco",
+        "role": "neutral"
+      },
+      "black": {
+        "displayName": "Preto",
+        "role": "neutral"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "PARAR - prévia de aplicação",
+      "kind": "button",
+      "description": "Exemplo cromático proposto; não é controle integrado ao robô.",
+      "html": "<button class=\"ds-stop\">PARAR</button>",
+      "css": ".ds-stop { background:#C72612;color:#FFFFFF;font:700 18px system-ui;padding:16px 24px;border:2px solid transparent; } .ds-stop:hover { border-color:#FFFFFF; } .ds-stop:focus-visible { outline:3px solid #D0830F;outline-offset:3px; } .ds-stop:active { background:#560204; }"
+    }
+  ],
+  "narrative": {
+    "overview": "Identidade oficial Titans conforme manual fornecido. Papéis dos componentes são adaptações propostas para o Balloone, ainda não implementadas.",
+    "keyCharacteristics": [
+      "Cores oficiais preservadas",
+      "Logo sem deformação ou efeitos",
+      "Legibilidade na pilotagem móvel"
+    ],
+    "dos": [
+      "Usar os códigos do manual como autoridade cromática."
+    ],
+    "donts": [
+      "Não reutilizar cores aproximadas das capturas como valores oficiais."
+    ]
+  }
+}

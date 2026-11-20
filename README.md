@@ -18,6 +18,17 @@ O projeto, a equipe e as datas estão na [página da organização](https://gith
 
 O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`. Na raiz, o `platformio.ini` configura a compilação do firmware.
 
+## Rodar a interface
+
+Com Node.js 22.12.0 ou mais recente, execute na raiz do repositório:
+
+```sh
+npm ci
+npm run dev
+```
+
+Para mais informações sobre a interface, veja no [README da interface](interface/README.md) para os comandos de compilação e testes.
+
 ## Palavras do GitHub
 
 - **Commit:** um registro de mudança, com uma mensagem curta dizendo o que mudou.

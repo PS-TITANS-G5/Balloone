@@ -4,12 +4,23 @@ CLAUDE.md
 CLAUDE.local.md
 .claude/
 
+# Arquivos temporários e prévias locais
+/tmp/
+/.impeccable/mocks/
+/.impeccable/build/
+/.impeccable/review/
+
 # Arquivos gerados pela compilação
 .pio/
 build/
 *.bin
 *.elf
 node_modules/
+/interface/dist/
+/interface/test-results/
+/interface/playwright-report/
+/interface/playwright/.cache/
+npm-debug.log*
 __pycache__/
 .venv/
 
@@ -22,4 +33,7 @@ desktop.ini
 
 # Senhas e configurações locais
 .env
+.env.*
+!.env.example
 secrets.h
+platformio.local.ini
