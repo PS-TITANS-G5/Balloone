@@ -72,6 +72,6 @@ O conjunto estrutural fabricável é composto por exatamente **duas peças princ
 
 ## 8. Organização desta Pasta
 * `Lista_de_Materiais.pdf` — Relação final quantificada de filamento, fixadores rosca soberba, insumos e componentes de ataque/balão.
-* `cad_editavel/` — Arquivo nativo do Autodesk Fusion (`.f3d`) e montagem completa exportada em `.step`.
+* `cad_editavel/` — Montagem estrutural em `.step` e [arquivo nativo completo (.f3d) no Google Drive](https://drive.google.com/file/d/1LiKVk99LiNnJ8CD8u2XVzzz0VUWP2P5Y/view?usp=sharing).
 * `stl_impressao/` — Malhas individuais prontas para impressão: `Base_Inferior.stl` e `Plataforma_Superior.stl`.
 * `imagens_e_vistas/` — Capturas cotadas das vistas superior, lateral, frontal e isométrica.
