@@ -1,32 +1,82 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Balloone G5 — Bancada</title><style>body{font:16px system-ui;background:#111827;color:#f8fafc;max-width:760px;margin:auto;padding:20px}input,button{font:inherit;padding:10px;border-radius:7px;margin:4px}button{background:#2563eb;color:white;border:0;touch-action:none;cursor:pointer}.pad{display:grid;grid-template-columns:repeat(3,90px);gap:8px}.pad button{height:65px}img{width:100%;max-width:500px;min-height:160px;background:#000}output{display:block;padding:10px;background:#293548;margin:12px 0}small{color:#cbd5e1}</style></head><body>
-<h1>Balloone G5 — protótipo de bancada</h1><p>Controle Wi-Fi puro, motores simulados. NÃO usar em arena ou com motores energizados.</p>
-<label>IP <input id="host" value="192.168.4.1"></label><label>Token <input id="token" type="password" autocomplete="off" placeholder="Token configurado no firmware"></label><button id="connect">Conectar</button><button id="disconnect">Desconectar</button>
-<output id="status" aria-live="polite">Desconectado</output><img id="video" alt="Vídeo da ESP32-CAM"><output id="videoStatus">Vídeo: inativo (monitoramento de quadros indisponível no elemento img)</output>
-<div class="pad"><span></span><button data-cmd="FWD">↑</button><span></span><button data-cmd="LEFT">←</button><button data-cmd="STOP">PARAR</button><button data-cmd="RIGHT">→</button><span></span><button data-cmd="BACK">↓</button><span></span></div>
-<output id="metrics">RTT: sem amostras</output><small>RTT mede confirmação de aplicação, não tempo até movimento. Vídeo sem medição de FPS. Teclas: setas/WASD. Perda de foco ou soltar o comando: STOP.</small>
-<script>
-'use strict';
-let ws=null,seq=0,held='STOP',pressed=new Set(),pointerCmd=null,sent=new Map(),samples=[],timer=null,session=0,ready=false;
-const $=id=>document.getElementById(id), status=t=>$('status').textContent=t;
-const keyMap={ArrowUp:'FWD',w:'FWD',ArrowDown:'BACK',s:'BACK',ArrowLeft:'LEFT',a:'LEFT',ArrowRight:'RIGHT',d:'RIGHT'};
-function cleanState(){held='STOP';pressed.clear();pointerCmd=null;sent.clear();samples=[];seq=0;ready=false;clearInterval(timer);timer=null;$('metrics').textContent='RTT: sem amostras';}
-function send(cmd){if(!ws||ws.readyState!==WebSocket.OPEN)return;const token=$('token').value;if(!token)return;const n=++seq;sent.set(n,performance.now());if(sent.size>60)sent.delete(sent.keys().next().value);ws.send(`${token},${n},${cmd}`);}
-function stop(){pressed.clear();pointerCmd=null;held='STOP';send('STOP');}
-function currentCmd(){if(pointerCmd)return pointerCmd;const values=[...pressed].map(k=>keyMap[k]);return values.length===1?values[0]:'STOP';}
-function updateHeld(){const next=currentCmd();if(next!==held){held=next;send(held);}}
-function closeSession(){stop();const old=ws;ws=null;session++;cleanState();if(old){old.onclose=null;old.onmessage=null;old.close();}$('video').removeAttribute('src');$('videoStatus').textContent='Vídeo: inativo';status('Desconectado');}
-$('connect').onclick=()=>{closeSession();const h=$('host').value.trim(),token=$('token').value;
-if(!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(h)||!token||token.includes(',')){status('Informe IP IPv4 e token sem vírgulas');return;}
-const id=++session;status('Conectando...');const sock=new WebSocket(`ws://${h}:81`);ws=sock;
-sock.onopen=()=>{if(id!==session)return;cleanState();ready=true;status('Conectado; STOP inicial enviado');send('STOP');timer=setInterval(()=>{if(id===session&&ready)send(held)},100);$('video').src=`http://${h}/stream`; $('videoStatus').textContent='Vídeo: solicitado; congelamento/FPS não verificáveis neste protótipo';};
-sock.onclose=()=>{if(id!==session)return;ws=null;cleanState();$('video').removeAttribute('src');status('Conexão encerrada — controle parado no cliente');};
-sock.onerror=()=>{if(id===session)status('Falha de comunicação');};
-sock.onmessage=e=>{if(id!==session)return;const m=/^ACK:(\d+):(\d+):(STOP|FWD|BACK|LEFT|RIGHT)$/.exec(e.data);if(!m){status(e.data);if(/^ERR:(BUSY|AUTH_OR_FORMAT|STALE|NEED_STOP)/.test(e.data)){held='STOP';pressed.clear();pointerCmd=null;}return;}
-const n=Number(m[1]);if(sent.has(n)){samples.push(performance.now()-sent.get(n));sent.delete(n);if(samples.length>200)samples.shift();const sorted=[...samples].sort((a,b)=>a-b);const p=i=>sorted[Math.min(sorted.length-1,Math.max(0,Math.ceil(i*sorted.length)-1))].toFixed(1);$('metrics').textContent=`RTT mediana: ${p(.5)} ms | p95: ${p(.95)} ms | n=${sorted.length} | comando: ${m[3]}`;}
-status(`Controle conectado | comando confirmado: ${m[3]}`);};};
-$('disconnect').onclick=closeSession;
-for(const b of document.querySelectorAll('[data-cmd]')){b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);pointerCmd=b.dataset.cmd;updateHeld();};b.onpointerup=e=>{pointerCmd=null;updateHeld();};b.onpointercancel=()=>{pointerCmd=null;updateHeld();};b.onlostpointercapture=()=>{pointerCmd=null;updateHeld();};}
-window.addEventListener('keydown',e=>{if(e.target.matches('input'))return;const k=e.key.length===1?e.key.toLowerCase():e.key;if(keyMap[k]){e.preventDefault();pressed.add(k);updateHeld();}});
-window.addEventListener('keyup',e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(keyMap[k]){e.preventDefault();pressed.delete(k);updateHeld();}});
-window.addEventListener('blur',stop);document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});window.addEventListener('pagehide',stop);
-</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a0001">
+  <link rel="icon" type="image/png" href="/titans-elmo.png">
+  <title>Balloone G5 - Pilotagem</title>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="arrow" viewBox="0 -960 960 960"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></symbol>
+    <symbol id="power" viewBox="0 -960 960 960"><path d="M440-440v-400h80v400h-80Zm40 320q-74 0-139.5-28.5T226-226q-49-49-77.5-114.5T120-480q0-80 33-151t93-123l56 56q-48 40-75 97t-27 121q0 116 82 198t198 82q117 0 198.5-82T760-480q0-64-26.5-121T658-698l56-56q60 52 93 123t33 151q0 74-28.5 139.5t-77 114.5q-48.5 49-114 77.5T480-120Z"/></symbol>
+    <symbol id="camera" viewBox="0 -960 960 960"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h480q33 0 56.5 23.5T720-720v180l160-160v440L720-420v180q0 33-23.5 56.5T640-160H160Zm0-80h480v-480H160v480Zm0 0v-480 480Z"/></symbol>
+    <symbol id="stop-icon" viewBox="0 -960 960 960"><path d="M320-640v320-320Zm-80 400v-480h480v480H240Zm80-80h320v-320H320v320Z"/></symbol>
+  </defs></svg>
+  <div class="app">
+    <header class="topbar">
+      <div class="identity"><img class="brand-mark" src="/titans-elmo.png" width="564" height="442" alt="Titans"><div><h1>Balloone <span>G5</span></h1><span class="team">Titans · Trainee</span></div></div>
+      <div class="session-status"><span class="status-dot" aria-hidden="true"></span><span id="status" role="status">Desconectado</span></div>
+      <div class="session-actions">
+        <button id="settings" class="quiet" aria-expanded="false" aria-controls="connection-panel">Conexão</button>
+        <button id="disconnect" class="quiet" disabled><svg class="icon"><use href="#power"/></svg><span>Desconectar</span></button>
+      </div>
+    </header>
+    <section id="connection-panel" class="connection-panel" aria-labelledby="connection-title" hidden>
+      <div><h2 id="connection-title">Conectar ao Balloone</h2><p>Entre na rede Wi-Fi <strong>BALLOONE_G5</strong> do robô.</p></div>
+      <form id="connection-form" novalidate>
+        <div class="field"><label for="host">Endereço IP</label><input id="host" inputmode="decimal" autocomplete="off" spellcheck="false" value="192.168.4.1" maxlength="15" aria-describedby="form-error"></div>
+        <div class="field"><label for="token">Token de controle</label><input id="token" type="password" autocomplete="off" placeholder="Configurado no firmware" maxlength="64" aria-describedby="form-error"></div>
+        <button id="connect" type="submit" class="primary">Conectar</button>
+      </form>
+      <p id="form-error" role="alert" class="form-error"></p>
+    </section>
+    <main>
+      <section class="cockpit" aria-label="Pilotagem">
+        <section class="steering control-group" aria-label="Giro">
+          <h2>Giro</h2>
+          <div class="steering-buttons">
+            <button class="direction" data-cmd="LEFT" disabled aria-label="Esquerda, manter pressionado"><svg class="icon arrow-left"><use href="#arrow"/></svg><span>Esquerda</span></button>
+            <button class="direction" data-cmd="RIGHT" disabled aria-label="Direita, manter pressionado"><svg class="icon arrow-right"><use href="#arrow"/></svg><span>Direita</span></button>
+          </div>
+        </section>
+        <section class="camera-panel" aria-label="Câmera frontal">
+          <div class="camera-heading"><h2>Câmera frontal</h2><span id="video-status">Inativa</span></div>
+          <div class="video-viewport">
+            <img id="video" alt="Imagem da câmera frontal do Balloone" hidden>
+            <div id="video-empty" class="video-empty">
+              <svg class="camera-icon icon" aria-hidden="true"><use href="#camera"/></svg>
+              <h3 id="video-title">Câmera em espera
+              </h3>
+              <p id="video-message">Conecte ao robô para solicitar a câmera<br>e habilitar os comandos.</p>
+              <button id="video-action" class="primary">Configurar conexão</button>
+            </div>
+          </div>
+        </section>
+        <section class="movement control-group" aria-label="Movimento">
+          <h2>Movimento</h2>
+          <div class="movement-buttons">
+            <button class="direction" data-cmd="FWD" disabled aria-label="Frente, manter pressionado"><svg class="icon"><use href="#arrow"/></svg><span>Frente</span></button>
+            <button class="direction" data-cmd="BACK" disabled aria-label="Ré, manter pressionado"><svg class="icon arrow-down"><use href="#arrow"/></svg><span>Ré</span></button>
+          </div>
+          <button id="stop" class="stop"><svg class="icon" aria-hidden="true"><use href="#stop-icon"/></svg>PARAR</button>
+        </section>
+      </section>
+      <div class="operation-message" hidden><p id="guidance" role="status"></p></div>
+    </main>
+    <footer>
+      <span class="network-label">Wi-Fi local <span id="robot-host">192.168.4.1</span></span>
+      <button id="diagnostics-toggle" class="text-button" aria-expanded="false" aria-controls="diagnostics">Diagnóstico</button>
+    </footer>
+    <section id="diagnostics" class="diagnostics" aria-labelledby="diagnostics-title" hidden>
+      <div class="diagnostics-heading"><h2 id="diagnostics-title">Diagnóstico da sessão</h2><button id="export" class="quiet" disabled>Exportar CSV</button></div>
+      <dl><div><dt>RTT mediana</dt><dd id="median">-</dd></div><div><dt>RTT p95</dt><dd id="p95">-</dd></div><div><dt>Amostras</dt><dd id="sample-count">0</dd></div><div><dt>Último ACK</dt><dd id="ack-age">-</dd></div><div><dt>Desconexões</dt><dd id="drops">0</dd></div></dl>
+      <p>ACK confirma o comando no firmware, não o movimento físico. RTT mede ida e volta. FPS e congelamento do vídeo não são medidos nesta versão.</p>
+      <p>Teclado auxiliar: setas ou WASD para mover; espaço para parar. Para retomar após uma interrupção, solte os controles e pressione novamente.</p>
+    </section>
+    <noscript>Ative o JavaScript para conectar ao robô. Os comandos estão bloqueados.</noscript>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

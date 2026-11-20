@@ -1,0 +1,11 @@
+{
+  "name": "balloone",
+  "private": true,
+  "workspaces": ["interface"],
+  "scripts": {
+    "dev": "npm run dev --workspace balloone-interface --",
+    "build": "npm run build --workspace balloone-interface --",
+    "preview": "npm run preview --workspace balloone-interface --",
+    "test": "npm run test --workspace balloone-interface --"
+  }
+}

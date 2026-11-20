@@ -1,4 +1,4 @@
-// Balloone G5 — bancada Wi-Fi; MOTOR FISICO DESABILITADO.
+// Balloone G5 - bancada Wi-Fi; MOTOR FISICO DESABILITADO.
 // ESP32 Arduino core 3.x; WebSocketsServer (Links2004); Freenove ESP32-WROVER-DEV v1.6.
 #include <WiFi.h>
 #include <WebSocketsServer.h>
@@ -8,6 +8,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if __has_include("secrets.h")
+#include "secrets.h"
+#endif
 
 #ifndef BALLOONE_AP_PASSWORD
 #define BALLOONE_AP_PASSWORD "123456789"
