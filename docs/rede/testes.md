@@ -1,49 +1,61 @@
-# Plano de validação de rede
+# Plano de validação da comunicação de rede — Balloone G5
 
-Este plano fecha a entrega de software com um roteiro reproduzível para a placa. Os ensaios abaixo estão **pendentes nesta revisão**. Não preencher o registro com resultados dos simuladores como se fossem medições da ESP32.
+Este roteiro descreve **o que é possível verificar com o firmware e a interface atuais**. Os testes de bancada ainda precisam ser executados e documentados na placa; não há medições reais incluídas neste arquivo.
+
+**Código de referência:** `firmware/balloone/balloone.ino` e `interface/index.html`, na `main` atual.
+
+## Situação e limites
+
+- O robô cria o AP `BALLOONE_G5` em `192.168.4.1`, canal Wi-Fi **6**, com até um aparelho associado.
+- A interface envia `token,sequência,comando` por WebSocket na porta **81** a cada aproximadamente **100 ms**. O firmware envia `ACK:sequência:milissegundos:comando` ou `ERR:...`.
+- O vídeo MJPEG é solicitado de `http://192.168.4.1/stream`, na porta **80**. A interface **não mede FPS nem detecta automaticamente o congelamento do vídeo**.
+- O RTT é exibido como **mediana, p95 e quantidade de amostras**; a interface mantém até **200 amostras recentes** e **não exporta CSV**.
+- Os motores continuam **simulados** por mensagens na serial. Nenhum teste atual comprova parada física dos motores.
+- A pinagem atual do esquemático, atualizada em 17/11, coloca o **LED de conexão no IO2**, conforme a atualização de 17/11. Esse LED **não é acionado pelo firmware atual**. A ponte H usa IO13, IO14, IO32 e IO33, ainda sem acionamento físico.
+- Não existem na interface atual: mensagem `INFO`, exportação automática, botão de "Iniciar nova medição", reconexão automática, controle por Escape, alerta automático de vídeo nem pasta `tests/` com testes automatizados.
 
 ## Preparação
 
-1. Grave a revisão em teste e registre seu commit em `observacoes`, além da versão informada no INFO.
-2. Confira alimentação, câmera e LED com eletrônica. Comece com motores desconectados; o firmware de rede atual só os simula.
-3. Conecte um notebook ao AP. Abra a interface e o monitor serial a 115200 baud. Registre operador, canal, distância, posição do robô, redes próximas e navegador/versão.
-4. Use **Iniciar nova medição** para cada cenário. Exporte ao final, confira os campos e guarde a evidência (log serial, vídeo ou captura) com referência em observações.
+1. Confira a revisão do firmware e o esquemático com a equipe de eletrônica. **Mantenha os motores desconectados** neste ensaio de rede.
+2. Grave o firmware pelo PlatformIO, abra o monitor serial a **115200 baud** e anote o hash do commit testado.
+3. Conecte o notebook ao AP `BALLOONE_G5` e abra `interface/index.html`. Preencha o token configurado no firmware e clique em **Conectar**.
+4. Registre operador, data, distância, canal 6, redes próximas, navegador/versão e se o vídeo está ativado.
+5. Use `docs/rede/registro-testes.csv` como **registro manual**. Insira somente valores realmente observados. Para cada cenário, reinicie a medição manualmente (por exemplo, desconectando e reconectando a interface) e guarde capturas ou logs.
 
-## Ensaios
+## Ensaios previstos
 
-| ID | Procedimento | Resultado esperado / o que registrar |
+| ID | Procedimento | O que verificar e registrar |
 | --- | --- | --- |
-| R01 | Ligar/resetar sem abrir a interface | AP disponível, LED de sessão apagado, comando simulado STOP; nenhum movimento na futura integração |
-| R02 | Conectar com token correto, comandar as quatro direções e soltar | Primeiro comando STOP; ACK correspondente a cada direção; LED aceso; soltar envia STOP |
-| R03 | Tentar movimento antes do primeiro STOP, token errado, sequência repetida/menor e mensagem malformada usando cliente WebSocket de teste | `NEED_STOP`, `AUTH_OR_FORMAT`, `STALE`, `FORMAT`/`SEQ`/`CMD`; não adquirir controle nem renovar timeout com erro |
-| R04 | Com o controle ativo, abrir outra aba da interface no mesmo notebook | Segunda aba recebe `ERR:BUSY`; primeira continua operando. Um segundo aparelho é recusado pelo limite de associação do AP |
-| R05 | Sem vídeo, obter pelo menos 100 ACKs durante comandos e paradas | Exportar n, mediana e p95 de RTT; anotar quedas e distância. FPS fica vazio |
-| R06 | Repetir R05 com vídeo e a mesma distância/canal | Pelo menos 100 ACKs; comparar RTT e medir FPS/travamentos; registrar impacto do vídeo |
-| R07 | Durante um comando, desligar o Wi-Fi do notebook ou afastá-lo até perder conexão | `FAILSAFE_TIMEOUT` na serial, STOP simulado e LED apagado. Medir o atraso real na placa; timeout configurado de 350 ms é apenas referência inicial |
-| R08 | Restaurar o Wi-Fi e manter uma tecla pressionada durante a recuperação | Reconectar automaticamente em STOP; tecla mantida/auto-repeat não retoma movimento; exigir soltar e pressionar de novo. Registrar tempo de reconexão |
-| R09 | Soltar mouse/toque fora do botão, cancelar toque, trocar janela, ocultar/voltar à página e usar Escape | STOP em cada caso; página oculta suspende conexão/reconexão; ao voltar, STOP confirmado antes de liberar controle |
-| R10 | Interromper apenas a transmissão de vídeo em servidor de teste, preservando WebSocket | Aviso após 2 s sem imagem, recuperação do vídeo; comando STOP disponível. Não conduzir pela câmera durante falha |
-| R11 | Testar boot sem câmera conectada, com alimentação desligada ao alterar a ligação | `CAMERA_ERROR`/vídeo indisponível, AP e controle continuam disponíveis; sem inferir estado dos motores a partir do vídeo |
-| R12 | Repetir R06 com outros robôs/APs ativos, comparando canais 1, 6 e 11 | Registrar quantidade/redes, disposição, RSSI se medido, RTT, FPS, travamentos, perdas e alcance; justificar canal escolhido |
-| R13 | Manter vídeo e controle por 15 min, duração máxima de um round | Registrar resets, perdas, FPS e RTT; confirmar estabilidade térmica/alimentação com eletrônica |
-| R14 | Após integração física, repetir partida, direções, corte físico e perda de controle com rodas suspensas | Eletrônica valida parada real, watchdog independente, polaridade e LEDs; só então avaliar liberação para arena |
+| R01 | Ligar/resetar a ESP32-CAM sem abrir a interface | AP disponível, `IP=192.168.4.1` na serial; sistema sem comando de movimento. O LED IO2 ainda não é controlado por software. |
+| R02 | Conectar com token correto e usar as quatro direções; soltar o botão/tecla | A interface envia `STOP` inicial; os comandos têm resposta `ACK`; a serial mostra `MOTOR_SIMULADO=...` quando o comando muda. |
+| R03 | Usar um cliente WebSocket de teste para enviar comando antes de `STOP`, token incorreto, sequência repetida e mensagens inválidas | Respostas de erro previstas: `ERR:NEED_STOP`, `ERR:AUTH_OR_FORMAT`, `ERR:STALE`, `ERR:FORMAT`, `ERR:SEQ` e/ou `ERR:CMD`. Salve as mensagens enviadas e recebidas. |
+| R04 | Abrir uma segunda aba conectada ao WebSocket enquanto a primeira detém a sessão | A segunda sessão não deve assumir o controle; verificar `ERR:BUSY`. O limite de um aparelho associado ao AP não impede várias abas no mesmo notebook. |
+| R05 | Sem vídeo, enviar comandos até receber pelo menos 100 confirmações | Anotar os valores de RTT mediana, p95 e n apresentados na interface, usando captura; **sem exportação automática**. |
+| R06 | Repetir R05 com vídeo aberto, mantendo distância e canal | Comparar o RTT. Verificar o vídeo visualmente e, se necessário, medir FPS por ferramenta externa, identificando o método. A interface não fornece FPS. |
+| R07 | Durante a sessão, interromper o Wi-Fi ou deixar de enviar comandos | Verificar parada **simulada** e encerramento. Se o timeout de 350 ms ocorrer, procurar `FAILSAFE_TIMEOUT` na serial; uma desconexão WebSocket pode encerrar a sessão sem essa mensagem. |
+| R08 | Restaurar o Wi-Fi e clicar novamente em **Conectar** | **Reconexão manual**; no novo WebSocket, conferir envio inicial de `STOP` antes de qualquer movimento simulado. Medir o tempo manualmente se necessário. |
+| R09 | Soltar botão/toque, cancelar ponteiro, soltar tecla, trocar janela ou ocultar a página | Verificar envio de `STOP` nas ações suportadas. **Escape não tem tratamento próprio** na versão atual. |
+| R10 | Observar vídeo e WebSocket em sessão prolongada; interromper a imagem se o ambiente permitir | Registrar visualmente ausência/congelamento de vídeo. A interface **não gera alerta automático após 2 segundos**; manter o comando em `STOP` quando não houver imagem confiável. |
+| R11 | Com alimentação desligada, desconectar temporariamente a câmera; religar em bancada | Verificar `CAMERA_ERROR` se a inicialização falhar. Investigar se AP e WebSocket continuam disponíveis; registrar o resultado efetivo. |
+| R12 | Repetir ensaios com outros APs/robôs ativos por perto | Registrar redes próximas, perdas, RTT e qualidade aparente do vídeo. **O canal do firmware está fixado em 6**; testar outros canais requer alteração e aprovação separadas. |
+| R13 | Manter sessão com vídeo/comandos por até 15 minutos, em bancada | Registrar resets, perdas, amostras de RTT e observações de aquecimento/alimentação. A interface retém só as 200 amostras de RTT mais recentes. |
+| R14 | Após futura integração da ponte H e supervisão física | Ensaiar parada real, perda de comunicação e segurança com rodas suspensas, sob responsabilidade conjunta de firmware e eletrônica; **não marcar como validado hoje**. |
 
-R03/R04 exercitam a exclusividade de **sessão**; o limite de um aparelho Wi-Fi não impede múltiplas abas no mesmo aparelho. Anexe a sequência exata de mensagens utilizada no cliente de teste.
+## Como registrar resultados
 
-## Leitura dos resultados
+O arquivo `registro-testes.csv` é um modelo com cabeçalho, **não um relatório automático**. Adicione uma linha por execução, anotando dados reais. Para as colunas sem medição disponível, deixe vazio e explique em `observacoes` — por exemplo, `fps_medio`, `reconexao_ms` e `parada_timeout_ms` quando ainda não houver instrumento ou teste físico adequado.
 
-- O edital não fixa FPS, resolução ou latência mínimos. Os parâmetros atuais (100 ms / 350 ms / QVGA) são escolhas iniciais e devem ser ajustados com evidência e alinhamento com eletrônica.
-- Compare R05/R06 e os canais mantendo distância, alimentação e comandos equivalentes. Um teste isolado sem interferência não representa a arena.
-- RTT não mede movimento nem atraso da câmera. Para latência de vídeo, filme a cena e a tela com um cronômetro comum no enquadramento; registre o método e a diferença observada.
-- `parada_timeout_ms` requer medição física ou de sinal na integração. Não copie automaticamente 350 para esse campo. Logs de software demonstram a mudança de estado simulada, sem comprovar corte de potência.
-- No CSV automático, `reconexao_ms` é mediana e o RTT mantém até 10000 amostras. Se o ensaio ultrapassar esse limite, registre que o RTT descreve a janela mais recente.
-- Qualquer movimento sem nova ação após reconexão, tomada de sessão por segundo cliente, ausência de STOP ou reinício sob carga exige correção antes do ensaio seguinte.
+- **RTT:** é o tempo até a resposta do firmware, não o atraso da câmera nem o tempo até movimento das rodas.
+- **Timeout:** `350 ms` é o valor configurado no firmware; não representa, por si só, medição física de parada.
+- **Canais:** não declarar testes em 1 ou 11 enquanto o firmware permanecer fixo no canal 6.
+- **Repetibilidade:** compare cenários mantendo distância, alimentação, navegador e padrão de comandos equivalentes.
+- **Segurança:** não concluir que motores, LED ou parada de emergência estão homologados com base em logs simulados.
 
-## Responsabilidades para fechamento físico
+## Pendências de integração
 
-| Área | Evidência necessária |
+| Área | Pendência real |
 | --- | --- |
-| Redes | R01–R13 documentados, canal justificado e comparação com/sem vídeo |
-| Firmware/eletrônica | IO15 e boot conferidos; motores e supervisão de parada integrados; medição real de timeout |
-| Interface | Navegador do piloto validado com acesso à rede local, comandos, vídeo, avisos e exportação |
-| Grupo | Canais/topologia confirmados para a competição e resultado da integração R14 |
+| Redes | Executar R01–R13 na placa, registrar medidas e justificar topologia/canal. |
+| Firmware/eletrônica | Confirmar no hardware a pinagem **IO2 do LED** e a ponte H; implementar acionamento real e mecanismo independente de parada antes do ensaio físico R14. |
+| Interface | Medir FPS/exportar métricas/reconectar automaticamente apenas se o grupo decidir implementar essas funcionalidades futuramente. |
+| Grupo | Validar canal e topologia para múltiplos robôs durante a competição. |
