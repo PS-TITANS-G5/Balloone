@@ -6,9 +6,7 @@ CLAUDE.local.md
 
 # Arquivos temporários e prévias locais
 /tmp/
-/.impeccable/mocks/
-/.impeccable/build/
-/.impeccable/review/
+/.impeccable/
 
 # Arquivos gerados pela compilação
 .pio/

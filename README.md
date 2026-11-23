@@ -20,14 +20,7 @@ O código de comunicação fica em `firmware/` e `interface/`. Os documentos sob
 
 ## Rodar a interface
 
-Com Node.js 22.12.0 ou mais recente, execute na raiz do repositório:
-
-```sh
-npm ci
-npm run dev
-```
-
-Para mais informações sobre a interface, veja no [README da interface](interface/README.md) para os comandos de compilação e testes.
+Siga o [README da interface](interface/README.md) para rodar no notebook e conectar ao Balloone.
 
 ## Palavras do GitHub
 

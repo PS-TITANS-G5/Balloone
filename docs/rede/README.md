@@ -1,6 +1,6 @@
 # Comunicação (rede)
 
-Como o notebook do piloto conversa com o robô. O código fica em `firmware/balloone/balloone.ino` (lado do robô) e em `interface/index.html` (lado do piloto).
+Como o notebook do piloto conversa com o robô. O código fica em `firmware/balloone/balloone.ino` (lado do robô) e em `interface/` (lado do piloto).
 
 **Situação em 05/11:** testado na placa. A rede, os comandos e o vídeo funcionam. Os motores ainda são simulados: o firmware só escreve o comando no monitor serial.
 
@@ -37,12 +37,12 @@ O `estudo.pdf`, feito para o PC1, compara as alternativas em detalhe. Ele propun
 
 ## Como testar
 
-1. Grave o firmware (veja `firmware/README.md`) e abra o monitor serial. Deve aparecer `IP=192.168.4.1`.
-2. Conecte um notebook à rede `BALLOONE_G5`.
-3. Abra `interface/index.html` no navegador desse notebook, digite o token `balloone` e clique em **Conectar**.
+1. Grave o firmware (veja o [README do firmware](../../firmware/README.md)) e abra o monitor serial. Deve aparecer `IP=192.168.4.1`.
+2. Prepare um notebook com Node.js 22.12.0 ou mais recente.
+3. Na raiz do repositório, com internet, execute `npm ci`. Depois, execute `npm run dev`, conecte o notebook ao Wi-Fi `BALLOONE_G5` e abra [http://127.0.0.1:5173](http://127.0.0.1:5173). Em **Conexão**, mantenha o IP `192.168.4.1`, informe o token `balloone` e clique em **Conectar**.
 4. Use os botões da tela ou as setas do teclado. Cada comando aparece no monitor serial, como `MOTOR_SIMULADO=FWD`.
 
-Siga o [plano de validação de rede](testes.md) e registre somente medições realizadas em `registro-testes.csv`. A interface não exporta CSV automaticamente.
+Em **Diagnóstico → Exportar CSV**, salve as amostras de RTT. Siga o [plano de validação de rede](testes.md) e registre somente medições realizadas em `registro-testes.csv`.
 
 **Testes que faltam:**
 

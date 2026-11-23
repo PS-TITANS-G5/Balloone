@@ -20,8 +20,6 @@ Conferidos no esquemático (`eletronica/esquematico-eletronica.pdf`) em 17/11. A
 
 ## Como compilar e gravar
 
-Para usar uma senha e um token próprios, defina as macros `BALLOONE_AP_PASSWORD` e `BALLOONE_CONTROL_TOKEN` em `firmware/balloone/secrets.h`. O Git ignora esse arquivo local.
-
 Use o VS Code com a extensão PlatformIO. O `platformio.ini`, na raiz do repositório, já define a placa e as bibliotecas.
 
 1. **Compilar:** clique no ✓ da barra azul, embaixo.
