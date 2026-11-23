@@ -18,6 +18,10 @@ O projeto, a equipe e as datas estão na [página da organização](https://gith
 
 O código de comunicação fica em `firmware/` e `interface/`. Os documentos sobre comunicação ficam em `docs/rede/`. Na raiz, o `platformio.ini` configura a compilação do firmware.
 
+## Rodar a interface
+
+Siga o [README da interface](interface/README.md) para rodar no notebook e conectar ao Balloone.
+
 ## Palavras do GitHub
 
 - **Commit:** um registro de mudança, com uma mensagem curta dizendo o que mudou.

@@ -1,0 +1,19 @@
+/* Cores oficiais: MIV Titans */
+:root {
+  --titans-red: #c72612;
+  --titans-gold: #d0830f;
+  --titans-wine: #560204;
+  --titans-brown: #1a0001;
+  --titans-orange: #d66a2a;
+  --titans-salmon: #d7604c;
+  --white: #ffffff;
+  --black: #000000;
+  --color-background: var(--titans-brown);
+  --color-surface: var(--titans-wine);
+  --color-text: var(--white);
+  --color-video-background: var(--black);
+  --color-stop: var(--titans-red);
+  --color-on-stop: var(--white);
+  --color-action: var(--titans-gold);
+  --color-on-action: var(--black);
+}
