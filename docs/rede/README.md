@@ -42,7 +42,7 @@ O `estudo.pdf`, feito para o PC1, compara as alternativas em detalhe. Ele propun
 3. Abra `interface/index.html` no navegador desse notebook, digite o token `balloone` e clique em **Conectar**.
 4. Use os botões da tela ou as setas do teclado. Cada comando aparece no monitor serial, como `MOTOR_SIMULADO=FWD`.
 
-Anote os resultados em `registro-testes.csv`.
+Siga o [plano de validação de rede](testes.md) e registre somente medições realizadas em `registro-testes.csv`. A interface não exporta CSV automaticamente.
 
 **Testes que faltam:**
 
