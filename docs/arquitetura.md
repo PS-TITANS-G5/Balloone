@@ -33,7 +33,6 @@ flowchart LR
   CHV ==> REG
   CHV ==> PH
   REG ==>|"5 V"| ESP
-  REG ==>|"5 V"| PH
   REG ==>|"5 V"| LV
   PH ==> ME
   PH ==> MD
@@ -51,8 +50,15 @@ flowchart LR
 
 Para mudar o diagrama, edite o texto do bloco `mermaid`. Dá para testar antes em [mermaid.live](https://mermaid.live).
 
+## Manutenção
+
+A placa fica em soquete, a bateria em suporte e os fios em conectores removíveis. Assim, dá para trocar uma peça sem solda. As peças estão no [inventário](../eletronica/inventario-componentes.pdf).
+
 ## Em aberto
 
-- **Proteção da bateria:** não há placa de proteção (BMS) para as duas células.
 - **Parada garantida:** se o firmware travar, nada desliga os motores.
 - **Rede da competição:** hoje a placa cria a própria rede. Um roteador central ainda está em avaliação.
+
+## Riscos
+
+- **Bateria sem proteção:** o grupo decidiu seguir sem BMS (17/11). Nada impede que as células descarreguem demais.

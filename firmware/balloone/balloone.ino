@@ -52,7 +52,7 @@ char desired[8]="STOP";
 #define MOTOR_IN2_PIN 14   // ponte H, motor P1
 #define MOTOR_IN3_PIN 32   // ponte H, motor P2
 #define MOTOR_IN4_PIN 33   // ponte H, motor P2
-#define LED_CONEXAO_PIN 15 // LED vermelho, com resistor de 330 ohms
+#define LED_CONEXAO_PIN 2  // LED vermelho, com resistor de 330 ohms
 
 // A implementacao fisica deve impor parada no driver por mecanismo independente
 // e supervisionar seu proprio timeout. Nenhum pino de motor e acionado aqui.
